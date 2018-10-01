@@ -1,0 +1,3 @@
+This is a profiler that handles output from THOMAS and uploads the 
+runtime performance data to a sqlite server, whoms data is served by 
+python flask.
