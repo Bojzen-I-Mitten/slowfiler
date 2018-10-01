@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dhomas</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/simple.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-text">
+            Dhomas
+        </div>
+            <ul class=navbar>
+              <li><a href="">Build data</a></li>
+              <li><a class="navbar-active"  href="">Performance history</a></li>
+              <li><a href="">History</a></li>
+            </ul>
+    </div>
+    <div class="content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Build</th>
+                    <th>Function name</th>
+                    <th>Average execution time during test</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for build in build_data %}
+                <tr>
+                    <th scope="row">{{build.build}}</th>
+                    <td><span class="label label-">{{build.name}}</td>
+                    <td><span class="label label-">{{build.samples}}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
