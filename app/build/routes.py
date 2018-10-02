@@ -7,7 +7,7 @@ from app.database.tables import Build
 
 
 
-mod_build = Blueprint('data', __name__, url_prefix='/templates',
+mod_build = Blueprint('data', __name__, url_prefix='/',
 template_folder='templates')
 
 @app.route('/compare/<int:buildnumber_one>&<int:buildnumber_two>')
