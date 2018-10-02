@@ -40,12 +40,8 @@ def compare(buildnumber_one, buildnumber_two):
         return render_template("compare.html", build_diff=build_diff)
 
 
-    else:
-        print("no beuno")
 
-    difference = []
-
-    return "Hej"
+    return render_template("error.html")
 
 
 
