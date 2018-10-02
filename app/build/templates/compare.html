@@ -1,57 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Slowfiler : dashboard{% endblock %}
+{% block title %}Slowfiler : compare{% endblock %}
 {% block main %}
-      <canvas id="functionDifferenceBuilds" class="table table-responsive"></canvas>
-      <script>
-        var ctx = document.getElementById("functionDifferenceBuilds");
-        var myChart = new Chart(ctx, {
-          type: 'horizontalBar',
-          data: {
-              labels: [ {% for functioname in build_diff %}
-                    "{{functioname}}",
-                  {% endfor %}],
-              datasets:[{
-                  label: 'Total frametime latest build',
-                  data: [
-                      {% for functioname in build_diff %}
-                        {{ build_diff[functioname] }},
-                      {% endfor %}
-                    ],
+  <canvas id="functionDifferenceBuilds" class="table table-responsive"></canvas>
+  <script>
+    var ctx = document.getElementById("functionDifferenceBuilds");
+    var myChart = new Chart(ctx, {
+      type: 'horizontalBar',
+      data: {
+          labels: [ {% for functioname in build_diff %}
+                "{{functioname}}",
+              {% endfor %}],
+          datasets:[{
+              label: 'Total frametime latest build',
+              data: [
+                  {% for functioname in build_diff %}
+                    {{ build_diff[functioname] }},
+                  {% endfor %}
+                ],
 
-                  borderColor: [
-                      'rgba(0,99,132,1)',
-                      'rgba(1, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 102, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-                  scales: {
-                      yAxes: [{
-                        scaleLabel: {
-                          display: true,
-                          labelString: 'Functioname'
-                        },
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }],
+              borderColor: [
+                  'rgba(0,99,132,1)',
+                  'rgba(1, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 102, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+              scales: {
+                  yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Functioname'
+                    },
+                      ticks: {
+                          beginAtZero:true
+                      }
+                  }],
 
-                      xAxes: [{
-                        scaleLabel: {
-                          display: true,
-                          labelString: 'Frame time in microsoft'
-                        },
-                          ticks: {
-                              beginAtZero:false
-                          }
-                      }]
-                  }
+                  xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Frame time in microsoft'
+                    },
+                      ticks: {
+                          beginAtZero:false
+                      }
+                  }]
               }
-        });
-      </script>
+          }
+    });
+  </script>
+  <form action="{{url_for('compare')}}" method="post">
+    <div class="form-group">
+      <select class="form-control" name="sel1">
+        {% for build_id in builds %}
+        <option>{{build_id}}</option>
+        {% endfor %}
+      </select>
+      <br>
+      <select class="form-control" name="sel2">
+        {% for build_id in builds %}
+        <option>{{build_id}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+
+    <div class="col-md-12">
+      <input type="submit" class="btn btn-success btn-send" value="Compare">
+    </div>
+  </form>
 {% endblock %}

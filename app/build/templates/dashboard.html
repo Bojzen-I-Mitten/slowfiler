@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Slowfiler : dashboard{% endblock %}
 {% block main %}
 <canvas id="lineFrameTime" class="table table-responsive"></canvas>
 <script>
@@ -107,26 +107,4 @@
         }
   });
 </script>
-<table class="table table-responsive">
-  <thead>
-    <tr>
-      <th scope="col">Jenkins build number</th>
-      <th scope="col">Function name</th>
-      <th scope="col">Average execution time</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for build in build_data %}
-    <tr>
-      <th scope="row"><a href="http://192.168.1.141:8080/job/SSP/{{build.build}}/">{{build.build}}</th>
-      <th>{{build.name}}</th>
-      <th>{{build.samples}}</th>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-<div class="starter-template">
-  <h1>Bootstrap starter template</h1>
-  <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-</div>
 {% endblock %}

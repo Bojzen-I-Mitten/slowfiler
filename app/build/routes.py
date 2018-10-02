@@ -7,45 +7,54 @@ from app.database.tables import Build
 
 
 
-mod_build = Blueprint('data', __name__, url_prefix='/',
+mod_build = Blueprint('data', __name__, url_prefix='/builds/',
 template_folder='templates')
 
-@app.route('/compare/<int:buildnumber_one>&<int:buildnumber_two>')
-def compare(buildnumber_one, buildnumber_two):
+
+
+@app.route('/builds/compare/', methods = ['POST', 'GET'])
+def compare():
     build_data = Build.query.all()
-    print(buildnumber_one)
-    print(buildnumber_two)
-    # make the database into a dict, build number being the key
-    build_dict = {}
-    for entry in build_data:
-        if entry.build in build_dict:
-            build_dict[entry.build].append(entry)
-        else:
-            build_dict[entry.build] = [entry]
 
-    if (buildnumber_two in build_dict and buildnumber_one in build_dict):
-        build_one = build_dict[buildnumber_one]
-        build_two = build_dict[buildnumber_two]
+    # Get all build id's in the list
+    builds = [function.build for function in build_data]
+    # Only keep one instance of the build id's
+    builds = list(set(builds))
 
-        build_diff = {}
-        for function in build_one:
-            build_diff[function.name] = function.samples
-
-        for function in build_two:
-            if function.name in build_diff:
-                build_diff[function.name] -= function.samples
+    if request.method == 'POST':
+        buildnumber_one = int(request.form['sel1'])
+        buildnumber_two = int(request.form['sel2'])
+        print(buildnumber_one)
+        print(buildnumber_two)
+        build_dict = {}
+        for entry in build_data:
+            if entry.build in build_dict:
+                build_dict[entry.build].append(entry)
             else:
-                build_diff[function.name] = 0
+                build_dict[entry.build] = [entry]
 
-        return render_template("compare.html", build_diff=build_diff)
+        print(build_dict[buildnumber_two])
+        if (buildnumber_two in build_dict and buildnumber_one in build_dict):
+            build_one = build_dict[buildnumber_one]
+            build_two = build_dict[buildnumber_two]
+
+            build_diff = {}
+            for function in build_one:
+                build_diff[function.name] = function.samples
+
+            for function in build_two:
+                if function.name in build_diff:
+                    build_diff[function.name] -= function.samples
+                else:
+                    build_diff[function.name] = 0
+
+            return render_template("compare.html", build_diff=build_diff, builds=builds)
 
 
-
-    return render_template("error.html")
-
+    return render_template("compare.html", builds=builds, build_diff={})
 
 
-@app.route('/')
+@app.route('/builds/')
 def index():
     build_data=Build.query.all()
     build_frame_time = {}
@@ -70,5 +79,5 @@ def index():
             build_frame_time[build.build] = build.samples
 
 
-    return render_template("index.html", build_data=build_data,
+    return render_template("dashboard.html", build_data=build_data,
                             build_frame_time=build_frame_time, last_build=build_dict[max(build_dict.keys())])
