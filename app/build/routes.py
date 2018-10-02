@@ -10,6 +10,45 @@ from app.database.tables import Build
 mod_build = Blueprint('data', __name__, url_prefix='/templates',
 template_folder='templates')
 
+@app.route('/compare/<int:buildnumber_one>&<int:buildnumber_two>')
+def compare(buildnumber_one, buildnumber_two):
+    build_data = Build.query.all()
+    print(buildnumber_one)
+    print(buildnumber_two)
+    # make the database into a dict, build number being the key
+    build_dict = {}
+    for entry in build_data:
+        if entry.build in build_dict:
+            build_dict[entry.build].append(entry)
+        else:
+            build_dict[entry.build] = [entry]
+
+    if (buildnumber_two in build_dict and buildnumber_one in build_dict):
+        build_one = build_dict[buildnumber_one]
+        build_two = build_dict[buildnumber_two]
+
+        build_diff = {}
+        for function in build_one:
+            build_diff[function.name] = function.samples
+
+        for function in build_two:
+            if function.name in build_diff:
+                build_diff[function.name] -= function.samples
+            else:
+                build_diff[function.name] = 0
+
+        return render_template("compare.html", build_diff=build_diff)
+
+
+    else:
+        print("no beuno")
+
+    difference = []
+
+    return "Hej"
+
+
+
 @app.route('/')
 def index():
     build_data=Build.query.all()
