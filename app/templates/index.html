@@ -1,40 +1,177 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <title>Dhomas</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/simple.css') }}">
-</head>
-<body>
-    <div class="header">
-        <div class="header-text">
-            Dhomas
-        </div>
-            <ul class=navbar>
-              <li><a href="">Build data</a></li>
-              <li><a class="navbar-active"  href="">Performance history</a></li>
-              <li><a href="">History</a></li>
-            </ul>
-    </div>
-    <div class="content">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Build</th>
-                    <th>Function name</th>
-                    <th>Average execution time during test</th>
-                </tr>
-            </thead>
-            <tbody>
-              {% for build in build_data %}
-                <tr>
-                    <th scope="row">{{build.build}}</th>
-                    <td><span class="label label-">{{build.name}}</td>
-                    <td><span class="label label-">{{build.samples}}</span></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>Slowfiler : Some piece profiler written for videa games</title>
+
+    <script src="http://www.chartjs.org/dist/2.7.2/Chart.bundle.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="http://getbootstrap.com/docs/4.1/examples/starter-template/starter-template.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">Slowfiler</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+      </div>
+    </nav>
+
+    <main role="main" class="container">
+      <canvas id="lineFrameTime" class="table table-responsive"></canvas>
+      <script>
+          var ctx = document.getElementById("lineFrameTime");
+          var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [ {% for build in build_frame_time %}
+                      "{{loop.index}}",
+                    {% endfor %}],
+                datasets:[{
+                    label: 'Average frame time per build',
+                    data: [
+                        {% for build in build_frame_time %}
+                          {{ build_frame_time[build] }},
+                        {% endfor %}
+                      ],
+
+                    borderColor: [
+                        'rgba(0,99,132,1)',
+                        'rgba(1, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 102, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                    scales: {
+                        yAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'Time in microsoft'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }],
+
+                        xAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'Build number'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+          });
+        </script>
+      <canvas id="latestBuildTime" class="table table-responsive"></canvas>
+      <script>
+        var ctx = document.getElementById("latestBuildTime");
+        var myChart = new Chart(ctx, {
+          type: 'horizontalBar',
+          data: {
+              labels: [ {% for data in last_build %}
+                    "{{data.name}}",
+                  {% endfor %}],
+              datasets:[{
+                  label: 'Total frametime latest build',
+                  data: [
+                      {% for build in build_data %}
+                        {{ build.samples }},
+                      {% endfor %}
+                    ],
+
+                  borderColor: [
+                      'rgba(0,99,132,1)',
+                      'rgba(1, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(75, 102, 192, 1)',
+                      'rgba(153, 102, 255, 1)',
+                      'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+                  scales: {
+                      yAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Functioname'
+                        },
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }],
+
+                      xAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Frame time in microsoft'
+                        },
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  }
+              }
+        });
+      </script>
+      <table class="table table-responsive">
+        <thead>
+          <tr>
+            <th scope="col">Jenkins build number</th>
+            <th scope="col">Function name</th>
+            <th scope="col">Average execution time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for build in build_data %}
+          <tr>
+            <th scope="row"><a href="http://192.168.1.141:8080/job/SSP/{{build.build}}/">{{build.build}}</th>
+            <th>{{build.name}}</th>
+            <th>{{build.samples}}</th>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="starter-template">
+        <h1>Bootstrap starter template</h1>
+        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+      </div>
+
+    </main><!-- /.container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="../../assets/js/vendor/popper.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+
+    <!-- Charts -->
+    <script src="https://cdnjs.com/libraries/Chart.js"></script>
+
+
 </body>
-</html>

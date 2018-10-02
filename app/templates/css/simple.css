@@ -70,7 +70,7 @@ li {
 li a {
     float: left;
     display: block;
-    color: #FFF;
+    color: #007BE6;
     text-align: center;
     padding: 9.5px 16px;
     text-decoration: none;
@@ -530,7 +530,7 @@ th {
     font-size: 88%;
     font-weight: 700;
     line-height: 1;
-    color: #fff;
+    color: #007BE6;
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
