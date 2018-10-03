@@ -8,12 +8,12 @@ import jenkins
 
 functionDict = {}
 
-returnCode = os.system("ThomasEditor.exe")
+#returnCode = os.system("ThomasEditor.exe")
 
-print(returnCode)
+#print(returnCode)
 
 try:
-    with open("227.csv", "r") as ins:
+    with open("data.csv", "r") as ins:
         for line in ins:
             functionName = re.match('[^0-9]*', line).group(0).split(" ")[-2]
             functionName = "::".join(functionName.split("::")[-2:])
@@ -28,11 +28,11 @@ try:
     outliers = {}
     graph_data = []
 
-    with open('csvfile.csv', 'wb') as file:
-        for functionName in functionDict:
-            average_frame_time = (functionName, sum(functionDict[functionName]) / len(functionDict[functionName]),
-            max(functionDict[functionName]), min(functionDict[functionName]))
-            graph_data.append(average_frame_time)
+
+    for functionName in functionDict:
+        average_frame_time = (functionName, sum(functionDict[functionName]) / len(functionDict[functionName]),
+        max(functionDict[functionName]), min(functionDict[functionName]))
+        graph_data.append(average_frame_time)
 
 
     print(graph_data)
