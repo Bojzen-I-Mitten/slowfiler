@@ -15,12 +15,18 @@
 
 {% block main %}
 
-
-
-
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Dashboard</h1>
+    <p class="lead">Visulizes the most important data of the current build</p>
+  </div>
 </div>
+
+
+
 <div class="row">
-  <div class="col-7">
+  <div class="col-6">
+    <h3> The performance between builds. Lower is better.</h1>
     <canvas id="lineFrameTime" class="table table-responsive"></canvas>
   </div>
   <script>
@@ -75,7 +81,8 @@
           }
     });
   </script>
-  <div class="col-8">
+  <div class="col-6">
+    <h3> The average execution time per tracked function in latest build</h1>
     <canvas id="latestBuildTime" class="table table-responsive"></canvas>
   </div>
   <script>
@@ -130,4 +137,5 @@
           }
     });
   </script>
+
 {% endblock %}
