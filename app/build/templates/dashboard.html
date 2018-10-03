@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Slowfiler : dashboard{% endblock %}
+
+{% block navbar %}
+<ul class="navbar-nav mr-auto">
+  <li class="nav-item  active">
+    <a class="nav-link" href="#">Dashboard <span class="sr-only">(current)</span></a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{url_for('compare')}}">Compare <span class="sr-only">(current)</span></a>
+  </li>
+</ul>
+{% endblock %}
+
+
 {% block main %}
 <canvas id="lineFrameTime" class="table table-responsive"></canvas>
 <script>

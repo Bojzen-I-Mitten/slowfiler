@@ -55,7 +55,7 @@ def compare():
 
 
 @app.route('/builds/')
-def index():
+def builds():
     build_data=Build.query.all()
     build_frame_time = {}
 
