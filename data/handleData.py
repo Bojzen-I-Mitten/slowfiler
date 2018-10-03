@@ -45,27 +45,45 @@ try:
 
 
     sqlite_file = 'C:\\test.db'
-    table_name = 'Build'
-    column_name = 'name'
-    column_sample = 'samples'
-    column_build = 'build'
 
+    # fetch all jenkins data
+    # We are going to assume that we have the data of the latest job
     j = jenkins.Jenkins("http://192.168.1.141:8080", "admin", "jenkinsjenkar")
-    job =  j.get_job_info("SSP")
+    job =  j.get_job_info("SSP") # All info from job SSP
+    build_number = job["lastBuild"]["number"] #
+    build_duration = j.get_build_info("SSP", job["lastBuild"]["number"])["duration"] # Fetch duration of latest build
+
 
     conn = sqlite3.connect(sqlite_file)
     c = conn.cursor()
 
-    for data_point in graph_data:
+    for data_point in graph_data: # For every function, send data to database
         try:
+            table_name = 'Build'
+            column_name = 'name'
+            column_sample = 'samples'
+            column_build = 'build'
+
             c.execute("INSERT INTO {tn} ({cn}, {cs}, {cb}) VALUES (\"{v1}\", {v2}, {v3})".\
-                format(tn=table_name, cn=column_name, cs=column_sample, cb=column_build, v1=data_point[0], v2=(data_point[1]), v3=job["lastBuild"]["number"]))
+                format(tn=table_name, cn=column_name, cs=column_sample, cb=column_build, v1=data_point[0], v2=(data_point[1]), v3=build_number))
+
         except sqlite3.IntegrityError:
             print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
 
+    try:
+        table_name = 'Build_time'
+        column_name = 'build_number'
+        column_duration = 'build_duration'
+
+        c.execute(("INSERT INTO {tn} ({cn}, {cd}) VALUES ({v1}, {v2})").\
+            format(tn=table_name, cn=column_name, cd=column_duration, v1=build_number, v2=build_duration))
+    except sqlite3.IntegrityError:
+        print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
 
     conn.commit()
     conn.close()
-    os.rename("data.csv", str(job["lastBuild"]["number"]) + ".csv")
+
+    #try:
+    #    os.rename("data.csv", str(job["lastBuild"]["number"]) + ".csv")
 except IOError:
     print("Could not open file")

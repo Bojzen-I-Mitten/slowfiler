@@ -3,7 +3,7 @@ from sqlalchemy import desc, or_
 from app import db, app
 from werkzeug import secure_filename
 
-from app.database.tables import Build
+from app.database.tables import Build, Build_time
 
 
 
@@ -21,12 +21,14 @@ def compare():
     # Only keep one instance of the build id's
     builds = list(set(builds))
 
+    build_dict = {}
+
     if request.method == 'POST':
         buildnumber_one = int(request.form['sel1'])
         buildnumber_two = int(request.form['sel2'])
         print(buildnumber_one)
         print(buildnumber_two)
-        build_dict = {}
+
         for entry in build_data:
             if entry.build in build_dict:
                 build_dict[entry.build].append(entry)
@@ -51,7 +53,7 @@ def compare():
             return render_template("compare.html", build_diff=build_diff, builds=builds)
 
 
-    return render_template("compare.html", builds=builds, build_diff={})
+    return render_template("compare.html", builds=builds, build_diff=build_dict)
 
 
 @app.route('/builds/')

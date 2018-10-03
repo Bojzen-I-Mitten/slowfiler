@@ -20,3 +20,21 @@ class Build(db.Model):
 
     def __repr__(self):
         return self.name
+
+
+class Build_time(db.Model):
+    __tablename__ = 'Build_time'
+    __bind_key__ = 'Dhomas'
+
+
+    id = Column(Integer, primary_key=True)
+    build_number = Column(Integer, primary_key=False)
+    build_duration = Column(Integer, primary_key=False)
+
+
+    def __init__(self, build_number, build_duration):
+        self.build_number = build_number
+        self.build_duration = build_duration
+
+    def __repr__(self):
+        return str(self.build_duration)

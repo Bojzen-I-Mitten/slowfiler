@@ -5,7 +5,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../../../favicon.ico">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/simple.css') }}">
     <title>{% block title %}  {% endblock %}</title>
 
     <script src="http://www.chartjs.org/dist/2.7.2/Chart.bundle.js"></script>
@@ -39,6 +39,11 @@
     {% endblock %}
     </main><!-- /.container -->
 
+    <footer class="footer fixed-bottom bg-dark">
+      <div class="container">
+        <span class="text-muted">Copyright 3D-asset 2018.</span>
+      </div>
+    </footer>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
