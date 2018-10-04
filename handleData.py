@@ -52,6 +52,7 @@ def runTestsAndUploadResultsToDb():
         embed.set_image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxGPybbkwZhiYyED4lUqxkYJLw2YGQ95viN9vRRNpe7zvbBX2b-g')
         embed.set_footer(text='Here is my footer text', ts=True)
 
+        embed.post()
 
         conn = sqlite3.connect(sqlite_file)
         c = conn.cursor()

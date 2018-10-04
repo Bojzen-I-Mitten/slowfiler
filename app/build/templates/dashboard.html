@@ -47,7 +47,7 @@
       type: 'line',
       data: {
           labels: [ {% for build in build_frame_time %}
-                "{{loop.index}}",
+                "{{build}}",
               {% endfor %}],
           datasets:[{
               label: 'Average frame time per build',
