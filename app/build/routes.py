@@ -3,6 +3,7 @@ from sqlalchemy import desc, or_
 from app import db, app
 from werkzeug import secure_filename
 import os
+import time
 from app.database.tables import Build, Build_time
 
 from handleData import runTestsAndUploadResultsToDb
@@ -23,7 +24,10 @@ def runtest():
 @app.route('/builds/nukedatabase/')
 def nukedatabase():
     Build.query.delete()
-    db.session.commmit()
+    Build_time.query.delete()
+    time.sleep(0.5)
+    db.session.commit()
+
     return redirect(url_for("builds"))
 
 @app.route('/builds/compare/', methods = ['POST', 'GET'])
@@ -93,8 +97,13 @@ def builds():
             build_frame_time[build.build] = build.samples
 
 
+    last_build=[]
+    if  not not build_dict.keys():
+        last_build=build_dict[max(build_dict.keys())]
+
+
     build_time = Build_time.query.all()
     return render_template("dashboard.html", build_data=build_data,
                             build_frame_time=build_frame_time,
-                            last_build=build_dict[max(build_dict.keys())],
+                            last_build=last_build,
                             build_time=build_time)
