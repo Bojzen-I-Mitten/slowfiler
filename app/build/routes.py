@@ -19,6 +19,13 @@ def runtest():
     print("All done, now showing page")
     return redirect(url_for("builds"))
 
+
+@app.route('/builds/nukedatabase/')
+def nukedatabase():
+    Build.query.delete()
+    db.session.commmit()
+    return redirect(url_for("builds"))
+
 @app.route('/builds/compare/', methods = ['POST', 'GET'])
 def compare():
     build_data = Build.query.all()

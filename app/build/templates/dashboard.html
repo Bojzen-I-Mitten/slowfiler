@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Slowfiler : dashboard{% endblock %}
 
+{% block sidebar %}
+<li>
+  <li>
+      <a href="{{url_for('runtest')}}">Run tests</a>
+  </li>
+</li>
+<li>
+    <a href="{{url_for('nukedatabase')}}">Delete database</a>
+</li>
+{% endblock %}
+
+
 {% block navbar %}
 <ul class="navbar-nav mr-auto">
   <li class="nav-item  active">
