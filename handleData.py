@@ -40,6 +40,7 @@ def runTestsAndUploadResultsToDb():
         job =  j.get_job_info("SSP") # All info from job SSP
         build_number = job["lastBuild"]["number"] #
         build_duration = j.get_build_info("SSP", job["lastBuild"]["number"])["duration"] # Fetch duration of latest build
+        print(build_number)
 
         url = 'https://discordapp.com/api/webhooks/489031312032923649/m_DPPOX33J1unuGYKHnHYtEID2qkYmKYNj5yEjajmfc0yxnT0iwm69k18fz6rE8DsRcD'
 
@@ -47,7 +48,7 @@ def runTestsAndUploadResultsToDb():
         embed = Webhook(url, color=428644)
 
         embed.set_author(name='Slowfiler', icon='https://i.imgur.com/rdm3W9t.png')
-        embed.set_desc('New data published \U0001f603 ')
+        embed.set_desc('New data published at http://192.168.1.141:8069/builds/ \U0001f603 ')
         embed.set_thumbnail('https://t4.rbxcdn.com/fee318796364847e0ff53ea658490477')
         embed.set_image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxGPybbkwZhiYyED4lUqxkYJLw2YGQ95viN9vRRNpe7zvbBX2b-g')
         embed.set_footer(text='Here is my footer text', ts=True)
@@ -74,7 +75,7 @@ def runTestsAndUploadResultsToDb():
             table_name = 'Build_time'
             column_name = 'build_number'
             column_duration = 'build_duration'
-
+            print(build_duration)
             c.execute(("INSERT INTO {tn} ({cn}, {cd}) VALUES ({v1}, {v2})").\
                 format(tn=table_name, cn=column_name, cd=column_duration, v1=build_number, v2=build_duration))
         except sqlite3.IntegrityError:

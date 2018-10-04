@@ -103,6 +103,7 @@ def builds():
 
 
     build_time = Build_time.query.all()
+    print(build_time)
     return render_template("dashboard.html", build_data=build_data,
                             build_frame_time=build_frame_time,
                             last_build=last_build,
