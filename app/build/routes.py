@@ -2,15 +2,22 @@ from flask import Blueprint, render_template, redirect, url_for, request, Respon
 from sqlalchemy import desc, or_
 from app import db, app
 from werkzeug import secure_filename
-
+import os
 from app.database.tables import Build, Build_time
 
-
+from handleData import runTestsAndUploadResultsToDb
 
 mod_build = Blueprint('data', __name__, url_prefix='/builds/',
 template_folder='templates')
 
-
+@app.route('/builds/runtests/')
+def runtest():
+    print("Starting thomas")
+    os.system("run.exe.lnk")
+    print("Starting crunch of data")
+    results = runTestsAndUploadResultsToDb()
+    print("All done, now showing page")
+    return redirect(url_for("builds"))
 
 @app.route('/builds/compare/', methods = ['POST', 'GET'])
 def compare():
@@ -26,8 +33,6 @@ def compare():
     if request.method == 'POST':
         buildnumber_one = int(request.form['sel1'])
         buildnumber_two = int(request.form['sel2'])
-        print(buildnumber_one)
-        print(buildnumber_two)
 
         for entry in build_data:
             if entry.build in build_dict:
@@ -81,5 +86,8 @@ def builds():
             build_frame_time[build.build] = build.samples
 
 
+    build_time = Build_time.query.all()
     return render_template("dashboard.html", build_data=build_data,
-                            build_frame_time=build_frame_time, last_build=build_dict[max(build_dict.keys())])
+                            build_frame_time=build_frame_time,
+                            last_build=build_dict[max(build_dict.keys())],
+                            build_time=build_time)
