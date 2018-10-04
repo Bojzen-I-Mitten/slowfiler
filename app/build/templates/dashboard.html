@@ -107,7 +107,7 @@
                 "{{data.name}}",
               {% endfor %}],
           datasets:[{
-              label: 'Total frametime latest build',
+              label: 'Execution time in microseconds per tracked function',
               data: [
                   {% for build in build_data %}
                     {{ build.samples }},
@@ -162,7 +162,7 @@
                   "{{loop.index}}",
                 {% endfor %}],
             datasets:[{
-                label: 'Total frametime latest build',
+                label: 'Time spent building corresponding build',
                 data: [
                     {% for time in build_time %}
                       {{ time }},
@@ -185,7 +185,7 @@
                     yAxes: [{
                       scaleLabel: {
                         display: true,
-                        labelString: 'Functioname'
+                        labelString: 'Time in microseconds'
                       },
                         ticks: {
                             beginAtZero:true
@@ -195,7 +195,7 @@
                     xAxes: [{
                       scaleLabel: {
                         display: true,
-                        labelString: 'Frame time in microsoft'
+                        labelString: 'Time in seconds'
                       },
                         ticks: {
                             beginAtZero:true
