@@ -30,10 +30,6 @@ def runTestsAndUploadResultsToDb():
             max(functionDict[functionName]), min(functionDict[functionName]))
             graph_data.append(average_frame_time)
 
-        url = 'https://discordapp.com/api/webhooks/489031312032923649/m_DPPOX33J1unuGYKHnHYtEID2qkYmKYNj5yEjajmfc0yxnT0iwm69k18fz6rE8DsRcD'
-
-        #msg = Webhook(url,msg="sluta vara en gaylord mogge" % (graph_data))
-        #msg.post()
 
 
         sqlite_file = 'C:\\test.db'
@@ -44,6 +40,17 @@ def runTestsAndUploadResultsToDb():
         job =  j.get_job_info("SSP") # All info from job SSP
         build_number = job["lastBuild"]["number"] #
         build_duration = j.get_build_info("SSP", job["lastBuild"]["number"])["duration"] # Fetch duration of latest build
+
+        url = 'https://discordapp.com/api/webhooks/489031312032923649/m_DPPOX33J1unuGYKHnHYtEID2qkYmKYNj5yEjajmfc0yxnT0iwm69k18fz6rE8DsRcD'
+
+
+        embed = Webhook(url, color=428644)
+
+        embed.set_author(name='Slowfiler', icon='https://i.imgur.com/rdm3W9t.png')
+        embed.set_desc('New data published \U0001f603 ')
+        embed.set_thumbnail('https://t4.rbxcdn.com/fee318796364847e0ff53ea658490477')
+        embed.set_image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxGPybbkwZhiYyED4lUqxkYJLw2YGQ95viN9vRRNpe7zvbBX2b-g')
+        embed.set_footer(text='Here is my footer text', ts=True)
 
 
         conn = sqlite3.connect(sqlite_file)
