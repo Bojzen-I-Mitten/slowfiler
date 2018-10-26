@@ -4,7 +4,7 @@ from app import db, app
 from werkzeug import secure_filename
 import os
 import time
-from app.database.tables import Build, Build_time
+from app.database.tables import Function_build, Build_time
 
 from handleData import runTestsAndUploadResultsToDb
 
@@ -13,13 +13,14 @@ template_folder='templates')
 
 @app.route('/builds/runtests/')
 def runtest():
+    """
     print("Starting thomas")
     os.system("run.exe.lnk")
     print("Starting crunch of data")
     results = runTestsAndUploadResultsToDb()
     print("All done, now showing page")
     return redirect(url_for("builds"))
-
+    """
 
 @app.route('/builds/nukedatabase/')
 def nukedatabase():
@@ -32,7 +33,7 @@ def nukedatabase():
 
 @app.route('/builds/compare/', methods = ['POST', 'GET'])
 def compare():
-    build_data = Build.query.all()
+    build_data = Function_build.query.all()
 
     # Get all build id's in the list
     builds = [function.build for function in build_data]
@@ -74,7 +75,7 @@ def compare():
 
 @app.route('/builds/')
 def builds():
-    build_data=Build.query.all()
+    build_data = Function_build.query.all()
     build_frame_time = {}
 
     # Crunch numbers from builds
@@ -84,10 +85,10 @@ def builds():
     # make the database into a dict, build number being the key
     build_dict = {}
     for entry in build_data:
-        if entry.build in build_dict:
-            build_dict[entry.build].append(entry)
+        if entry.avg in build_dict:
+            build_dict[entry.avg].append(entry)
         else:
-            build_dict[entry.build] = [entry]
+            build_dict[entry.avg] = [entry]
 
 
     for build in build_data:

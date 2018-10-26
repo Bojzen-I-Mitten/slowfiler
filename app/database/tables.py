@@ -4,13 +4,16 @@ from sqlalchemy.orm import relationship
 
 from string import digits
 
-class Build(db.Model):
-    __tablename__ = 'Build'
+class Function_build(db.Model):
+    __tablename__ = 'Function_build'
     __bind_key__ = 'Dhomas'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
-    samples = Column(Float, nullable=False)
+    function_name = Column(String(100), nullable=False)
+    avg = Column(Float, nullable=False)
+    std = Column(Float, nullable=False)
+    max = Column(Float, nullable=False)
+    min = Column(Float, nullable=False)
     build = Column(Integer, primary_key=False)
 
     def __init__(self, name, samples, build):
