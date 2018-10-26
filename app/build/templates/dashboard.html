@@ -33,30 +33,24 @@
     <p class="lead">Visulizes the most important data of the current build</p>
   </div>
 </div>
-
-
-
-<div class="row">
-  <div class="col-6">
-    <h3> The performance between builds. Lower is better.</h1>
-    <canvas id="lineFrameTime" class="table table-responsive"></canvas>
-  </div>
+<div class="col-6">
+  <h3> The performance between builds. Lower is better.</h1>
+  <canvas id="lineram" class="table table-responsive"></canvas>
   <script>
-    var ctx = document.getElementById("lineFrameTime");
+    var ctx = document.getElementById("lineram");
     var myChart = new Chart(ctx, {
       type: 'line',
       data: {
-          labels: [ {% for build in build_frame_time %}
-                "{{build}}",
+          labels: [ {% for build in build_data %}
+                "{{build.build_number}}",
               {% endfor %}],
           datasets:[{
               label: 'Average frame time per build',
               data: [
-                  {% for build in build_frame_time %}
-                    {{ build_frame_time[build] }},
+                  {% for build in build_data %}
+                    {{ build.build_ramusage }},
                   {% endfor %}
                 ],
-
               borderColor: [
                   'rgba(0,99,132,1)',
                   'rgba(1, 162, 235, 1)',
@@ -79,7 +73,6 @@
                           beginAtZero:true
                       }
                   }],
-
                   xAxes: [{
                     scaleLabel: {
                       display: true,
@@ -93,8 +86,63 @@
           }
     });
   </script>
+  </div>
   <div class="col-6">
-    <h3> The average execution time per tracked function in latest build</h1>
+    <h3> The performance between builds. Lower is better.</h1>
+    <canvas id="linevram" class="table table-responsive"></canvas>
+    <script>
+      var ctx = document.getElementById("linevram");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [ {% for build in build_data %}
+                  "{{build.build_number}}",
+                {% endfor %}],
+            datasets:[{
+                label: 'Average frame time per build',
+                data: [
+                    {% for build in build_data %}
+                      {{ build.build_vramusage }},
+                    {% endfor %}
+                  ],
+                borderColor: [
+                    'rgba(0,99,132,1)',
+                    'rgba(1, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 102, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+                scales: {
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Time in microsoft'
+                      },
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }],
+                    xAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Build number'
+                      },
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+      });
+    </script>
+    </div>
+  <div class="col-6">
+    <h3> The average execution time per tracked function in latest build</h3>
     <canvas id="latestBuildTime" class="table table-responsive"></canvas>
   </div>
   <br/>
@@ -103,14 +151,14 @@
     var myChart = new Chart(ctx, {
       type: 'horizontalBar',
       data: {
-          labels: [ {% for data in last_build %}
-                "{{data.name}}",
+          labels: [ {% for data in function_data %}
+                "{{data.function_name}}",
               {% endfor %}],
           datasets:[{
               label: 'Execution time in microseconds per tracked function',
               data: [
-                  {% for build in build_data %}
-                    {{ build.samples }},
+                  {% for data in function_data %}
+                    {{ data.avg }},
                   {% endfor %}
                 ],
 
@@ -150,60 +198,19 @@
           }
     });
   </script>
-  <div class="col-6">
-    <h3> Build duration per build</h1>
-    <canvas id="latestBuildDuration" class="table table-responsive"></canvas>
-    <script>
-      var ctx = document.getElementById("latestBuildDuration");
-      var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [ {% for time in build_time %}
-                  "{{loop.index}}",
-                {% endfor %}],
-            datasets:[{
-                label: 'Time spent building corresponding build',
-                data: [
-                    {% for time in build_time %}
-                      {{ time }},
-                    {% endfor %}
-                  ],
-
-                borderColor: [
-                    'rgba(0,99,132,1)',
-                    'rgba(1, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 102, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-                scales: {
-                    yAxes: [{
-                      scaleLabel: {
-                        display: true,
-                        labelString: 'Time in microseconds'
-                      },
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }],
-
-                    xAxes: [{
-                      scaleLabel: {
-                        display: true,
-                        labelString: 'Time in seconds'
-                      },
-                        ticks: {
-                            beginAtZero:true
-                        }
-                    }]
-                }
-            }
-      });
-    </script>
+  <table style="width:100%">
+ <tr>
+   <th>function_name</th>
+   <th>avg</th>
+   <th>build id</th>
+ </tr>
+ {% for data in temp %}
+ <tr>
+   <td>{{data.function_name}}</td>
+   <td>{{data.avg}}</td>
+   <td>{{data.build}}</td>
+ </tr>
+ {% endfor %}
+</table>
   </div>
 {% endblock %}

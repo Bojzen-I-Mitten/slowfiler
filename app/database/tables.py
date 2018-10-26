@@ -16,28 +16,39 @@ class Function_build(db.Model):
     min = Column(Float, nullable=False)
     build = Column(Integer, primary_key=False)
 
-    def __init__(self, name, samples, build):
-        self.name = name
-        self.samples = samples
+    def __init__(self, name, avg, std, max, min, build):
+        self.function_name = name
+        self.avg = avg
         self.build = build
+        self.std = std
+        self.max = max
+        self.min = min
 
     def __repr__(self):
-        return self.name
+        return self.function_name
 
+    def __gt__(self, other):
+        return self.id > other.id
 
-class Build_time(db.Model):
-    __tablename__ = 'Build_time'
+class Build_data(db.Model):
+    __tablename__ = 'Build_data'
     __bind_key__ = 'Dhomas'
 
 
     id = Column(Integer, primary_key=True)
     build_number = Column(Integer, primary_key=False)
-    build_duration = Column(Integer, primary_key=False)
+    build_time_duration = Column(Integer, primary_key=False)
+    build_ramusage = Column(Float, nullable=False)
+    build_vramusage = Column(Float, nullable=False)
 
-
-    def __init__(self, build_number, build_duration):
+    def __init__(self, build_number, build_time_duration, build_ramusage, build_vramusage):
         self.build_number = build_number
-        self.build_duration = build_duration
+        self.build_time_duration = build_time_duration
+        self.build_ramusage = build_ramusage
+        self.build_vramusage = build_vramusage
+
+    def __gt__(self, other):
+        self.build_number > other.build_number
 
     def __repr__(self):
-        return str(self.build_duration)
+        return str(self.build_time_duration)

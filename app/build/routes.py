@@ -4,7 +4,7 @@ from app import db, app
 from werkzeug import secure_filename
 import os
 import time
-from app.database.tables import Function_build, Build_time
+from app.database.tables import Function_build, Build_data
 
 from handleData import runTestsAndUploadResultsToDb
 
@@ -24,8 +24,8 @@ def runtest():
 
 @app.route('/builds/nukedatabase/')
 def nukedatabase():
-    Build.query.delete()
-    Build_time.query.delete()
+    Function_build.query.delete()
+    Build_data.query.delete()
     time.sleep(0.5)
     db.session.commit()
 
@@ -75,37 +75,16 @@ def compare():
 
 @app.route('/builds/')
 def builds():
-    build_data = Function_build.query.all()
-    build_frame_time = {}
+    function_build_data = Function_build.query.all()
+    build_data = Build_data.query.all()
+    print(build_data)
+    # Convert build_data into a dict, where ID is the key
 
-    # Crunch numbers from builds
-    # Adds totalframe time and places it in a dict
-    # Key is build number
-
-    # make the database into a dict, build number being the key
-    build_dict = {}
-    for entry in build_data:
-        if entry.avg in build_dict:
-            build_dict[entry.avg].append(entry)
+    build_data_sorted = {}
+    for function in function_build_data:
+        if function.build not in build_data_sorted:
+            build_data_sorted[function.build] = [function]
         else:
-            build_dict[entry.avg] = [entry]
+            build_data_sorted[function.build].append(function)
 
-
-    for build in build_data:
-        if build.build in build_frame_time:
-            build_frame_time[build.build] = build_frame_time[build.build] + build.samples
-        else:
-            build_frame_time[build.build] = build.samples
-
-
-    last_build=[]
-    if  not not build_dict.keys():
-        last_build=build_dict[max(build_dict.keys())]
-
-
-    build_time = Build_time.query.all()
-    print(build_time)
-    return render_template("dashboard.html", build_data=build_data,
-                            build_frame_time=build_frame_time,
-                            last_build=last_build,
-                            build_time=build_time)
+    return render_template("dashboard.html", function_data = build_data_sorted[max(function_build_data).build], build_data = build_data)

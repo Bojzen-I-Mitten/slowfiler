@@ -39,6 +39,7 @@ def runTestsAndUploadResultsToDb():
         c = conn.cursor()
 
         for function in function_data: # For every function, send data to database
+            print(function)
             try:
                 table_name = 'Function_build'
                 column_name = 'function_name'
@@ -59,14 +60,19 @@ def runTestsAndUploadResultsToDb():
                 print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
 
         try:
-            table_name = 'Build_time'
-            column_name = 'build_number'
-            column_duration = 'build_duration'
-            c.execute(("INSERT INTO {tn} ({cn}, {cd}) VALUES ({v1}, {v2})").\
-                format(tn=table_name, cn=column_name, cd=column_duration, v1=build_number, v2=build_duration))
+            table_name = 'Build_data'
+            column_number = "build_number"
+            column_duration = "build_time_duration"
+            column_ramusage = "build_ramusage"
+            column_vramuasge = "build_vramusage"
+
+            c.execute("INSERT INTO {tn} ({cn}, {cd}, {cr}, {cv}) VALUES ({vn}, {vd}, {vr}, {vv})".\
+                format(tn=table_name, cn=column_number, cd=column_duration, cr=column_ramusage, cv=column_vramuasge,
+                    vn=build_number, vd=build_duration, vr=data["SlowfilerData"]["build"]["ramUsage"],
+                    vv=data["SlowfilerData"]["build"]["vramUsage"]))
+
         except sqlite3.IntegrityError:
             print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
-
         # Close connection
         conn.commit()
         conn.close()
