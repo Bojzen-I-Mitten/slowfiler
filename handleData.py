@@ -16,13 +16,20 @@ def runTestsAndUploadResultsToDb():
             data = json.load(ins)
 
         function_data = {}
-        for function in data["SlowfilerData"]["functions"]:
-            rawData = data["SlowfilerData"]["functions"][function] # Gives an array of all samples
-            function_data[function] = {}
-            function_data[function]["avg"] = sum(rawData) / len(rawData)
-            function_data[function]["std"] = statistics.stdev(rawData)
-            function_data[function]["max"] = max(rawData)
-            function_data[function]["min"] = min(rawData)
+        for processor_id in data["SlowfilerData"]["processor"]:
+            for function in data["SlowfilerData"]["processor"][processor_id]["functions"]:
+                rawData = data["SlowfilerData"]["processor"][processor_id]["functions"][function] # Gives an array of all samples
+                function_data[function] = {}
+                function_data[function]["avg"] = sum(rawData) / len(rawData)
+
+                try:
+                    function_data[function]["std"] = statistics.stdev(rawData)
+                except statistics.StatisticsError:
+                    print("Only one entry for {}, cannot calculate varience".format(function))
+                    function_data[function]["std"] = 0
+
+                function_data[function]["max"] = max(rawData)
+                function_data[function]["min"] = min(rawData)
 
 
         # fetch all jenkins data

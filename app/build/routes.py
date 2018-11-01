@@ -77,7 +77,10 @@ def compare():
 def builds():
     function_build_data = Function_build.query.all()
     build_data = Build_data.query.all()
-    print(build_data)
+    if (len(build_data) < 1 and len(function_build_data) < 1):
+        runTestsAndUploadResultsToDb()
+        function_build_data = Function_build.query.all()
+        build_data = Build_data.query.all()
     # Convert build_data into a dict, where ID is the key
 
     build_data_sorted = {}
