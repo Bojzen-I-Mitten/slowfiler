@@ -4,6 +4,13 @@ from sqlalchemy.orm import relationship
 
 from string import digits
 
+class Build_fps(db.Model):
+    __tablename__ = 'Build_fps'
+    __bind_key__ = 'Dhomas'
+    id = Column(Integer, primary_key=True)
+    sample = Column(Float, nullable=False)
+    build = Column(Integer, primary_key=False)
+
 class Function_build(db.Model):
     __tablename__ = 'Function_build'
     __bind_key__ = 'Dhomas'
@@ -34,18 +41,24 @@ class Build_data(db.Model):
     __tablename__ = 'Build_data'
     __bind_key__ = 'Dhomas'
 
-
     id = Column(Integer, primary_key=True)
     build_number = Column(Integer, primary_key=False)
     build_time_duration = Column(Integer, primary_key=False)
     build_ramusage = Column(Float, nullable=False)
     build_vramusage = Column(Float, nullable=False)
+    build_avgfps = Column(Float, nullable=False)
+    build_stdfps = Column(Float, nullable=False)
+    build_minfps = Column(Float, nullable=False)
 
-    def __init__(self, build_number, build_time_duration, build_ramusage, build_vramusage):
+    def __init__(self, build_number, build_time_duration, build_ramusage,
+                build_vramusage, build_avgfps, build_stdfps, build_minfps):
         self.build_number = build_number
         self.build_time_duration = build_time_duration
         self.build_ramusage = build_ramusage
         self.build_vramusage = build_vramusage
+        self.build_avgfps = build_avgfps
+        self.build_stdfps = build_stdfps
+        self.build_minfps = build_minfps
 
     def __gt__(self, other):
         self.build_number > other.build_number

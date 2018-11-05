@@ -33,63 +33,62 @@
     <p class="lead">Visulizes the most important data of the current build</p>
   </div>
 </div>
-<div class="col-6">
-  <h3> Ram usage between builds.</h3>
-  <canvas id="lineram" class="table table-responsive"></canvas>
-  <script>
-    var ctx = document.getElementById("lineram");
-    var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: [ {% for build in build_data %}
-                "{{build.build_number}}",
-              {% endfor %}],
-          datasets:[{
-              label: 'Average frame time per build',
-              data: [
-                  {% for build in build_data %}
-                    {{ build.build_ramusage }},
-                  {% endfor %}
+<div class="row">
+  <div class="col-6">
+    <canvas id="lineram"></canvas>
+    <script>
+      var ctx = document.getElementById("lineram");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [ {% for build in build_data %}
+                  "{{build.build_number}}",
+                {% endfor %}],
+            datasets:[{
+                label: 'RAM usage',
+                data: [
+                    {% for build in build_data %}
+                      {{ build.build_ramusage }},
+                    {% endfor %}
+                  ],
+                borderColor: [
+                    'rgba(0,99,132,1)',
+                    'rgba(1, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 102, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
                 ],
-              borderColor: [
-                  'rgba(0,99,132,1)',
-                  'rgba(1, 162, 235, 1)',
-                  'rgba(255, 206, 86, 1)',
-                  'rgba(75, 102, 192, 1)',
-                  'rgba(153, 102, 255, 1)',
-                  'rgba(255, 159, 64, 1)'
-              ],
-              borderWidth: 1
-          }]
-      },
-      options: {
-              scales: {
-                  yAxes: [{
-                    scaleLabel: {
-                      display: true,
-                      labelString: 'Time in microsoft'
-                    },
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }],
-                  xAxes: [{
-                    scaleLabel: {
-                      display: true,
-                      labelString: 'Build number'
-                    },
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }]
-              }
-          }
-    });
-  </script>
+                borderWidth: 1
+            }]
+        },
+        options: {
+                scales: {
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'mb'
+                      },
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }],
+                    xAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Build number'
+                      },
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+      });
+    </script>
   </div>
   <div class="col-6">
-    <h3> Vram ramUsage.</h3>
-    <canvas id="linevram" class="table table-responsive"></canvas>
+    <canvas id="linevram"></canvas>
     <script>
       var ctx = document.getElementById("linevram");
       var myChart = new Chart(ctx, {
@@ -99,7 +98,7 @@
                   "{{build.build_number}}",
                 {% endfor %}],
             datasets:[{
-                label: 'Average frame time per build',
+                label: 'VRAM usage',
                 data: [
                     {% for build in build_data %}
                       {{ build.build_vramusage }},
@@ -121,7 +120,7 @@
                     yAxes: [{
                       scaleLabel: {
                         display: true,
-                        labelString: 'Time in microsoft'
+                        labelString: 'mb'
                       },
                         ticks: {
                             beginAtZero:true
@@ -140,77 +139,196 @@
             }
       });
     </script>
-    </div>
+  </div>
   <div class="col-6">
-    <h3> The average execution time per tracked function in latest build</h3>
-    <canvas id="latestBuildTime" class="table table-responsive"></canvas>
-  </div>
-  <br/>
-  <script>
-    var ctx = document.getElementById("latestBuildTime");
-    var myChart = new Chart(ctx, {
-      type: 'horizontalBar',
-      data: {
-          labels: [ {% for data in function_data %}
-                "{{data.function_name}}",
-              {% endfor %}],
-          datasets:[{
-              label: 'Execution time in microseconds per tracked function',
-              data: [
-                  {% for data in function_data %}
-                    {{ data.avg }},
-                  {% endfor %}
+    <canvas id="lineavgfps"></canvas>
+    <script>
+      var ctx = document.getElementById("lineavgfps");
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [ {% for build in build_data %}
+                  "{{build.build_number}}",
+                {% endfor %}],
+            datasets:[{
+                label: 'Average frame time per build',
+                data: [
+                    {% for build in build_data %}
+                      {{ build.build_avgfps }},
+                    {% endfor %}
+                  ],
+                borderColor: [
+                    'rgba(0,99,132,1)',
+                    'rgba(1, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 102, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
                 ],
-
-              borderColor: [
-                  'rgba(0,99,132,1)',
-                  'rgba(1, 162, 235, 1)',
-                  'rgba(255, 206, 86, 1)',
-                  'rgba(75, 102, 192, 1)',
-                  'rgba(153, 102, 255, 1)',
-                  'rgba(255, 159, 64, 1)'
-              ],
-              borderWidth: 1
-          }]
-      },
-      options: {
-              scales: {
-                  yAxes: [{
-                    scaleLabel: {
-                      display: true,
-                      labelString: 'Functioname'
-                    },
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }],
-
-                  xAxes: [{
-                    scaleLabel: {
-                      display: true,
-                      labelString: 'Frame time in microsoft'
-                    },
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }]
-              }
-          }
-    });
-  </script>
-  <table style="width:100%">
- <tr>
-   <th>function_name</th>
-   <th>avg</th>
-   <th>build id</th>
- </tr>
- {% for data in temp %}
- <tr>
-   <td>{{data.function_name}}</td>
-   <td>{{data.avg}}</td>
-   <td>{{data.build}}</td>
- </tr>
- {% endfor %}
-</table>
+                borderWidth: 1
+            }]
+        },
+        options: {
+                scales: {
+                    yAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'ms'
+                      },
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }],
+                    xAxes: [{
+                      scaleLabel: {
+                        display: true,
+                        labelString: 'Build number'
+                      },
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+      });
+    </script>
   </div>
+  <div class="col-6">
+    <h7>BUILD RAM STATUS:
+    {%if build_data[0].build_ramusage is greaterthan 256 %}
+    FAILED, MEMORY IS {{build_data[0].build_ramusage}}</h7>
+    {%else%}
+    PASS, MEMORY IS {{build_data[0].build_ramusage}}</h7>
+    {%endif%}
+    <br/>
+    <h7>BUILD VRAM STATUS:
+    {%if build_data[0].build_vramusage is greaterthan 512 %}
+    FAILED, MEMORY IS {{build_data[0].build_vramusage}}</h7>
+    {%else%}
+    PASS, MEMORY IS {{build_data[0].build_vramusage}}</h7>
+    {%endif%}
+    <br />
+    <h7>BUILD FPS STATUS:
+    {%if build_data[0].build_avgfps is not greaterthan 32 %}
+    PASS, FPS IS {{build_data[0].build_avgfps}}</h7>
+    {%else%}
+    FAILED, FPS IS {{build_data[0].build_avgfps}}</h7>
+    {%endif%}
+  </div>
+</div>
+<ul class="nav nav-tabs">
+  {% for build in build_data %}
+  <li class="active"><a data-toggle="tab" href="#{{build.build_number}}">Build:#{{build.build_number}}</a></li>
+  {% endfor %}
+</ul>
+<div class="tab-content">
+
+  {% for build in build_data %}
+  <div id="{{build.build_number}}" class="tab-pane fade in active">
+    <div class="col-6">
+      <h7> The average execution time per tracked function in latest build</h7>
+      <canvas id="latestBuildTime" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
+      <script>
+        var ctx = document.getElementById("latestBuildTime");
+        var myChart = new Chart(ctx, {
+          type: 'horizontalBar',
+          data: {
+              labels: [ {% for function in build_data_sorted[build.build_number] %}
+                    "{{function.function_name}}",
+                  {% endfor %}],
+              datasets:[{
+                  label: 'Execution time in microseconds per tracked function',
+                  data: [
+                      {% for function in build_data_sorted[build.build_number] %}
+                        {{ function.avg }},
+                      {% endfor %}
+                    ],
+
+                  borderColor: [
+                      'rgba(0,99,132,1)',
+                      'rgba(1, 162, 235, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(75, 102, 192, 1)',
+                      'rgba(153, 102, 255, 1)',
+                      'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+                  scales: {
+                      yAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Functioname'
+                        },
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }],
+
+                      xAxes: [{
+                        scaleLabel: {
+                          display: true,
+                          labelString: 'Frame time in microsoft'
+                        },
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  }
+              }
+        });
+      </script>
+    </div>
+    <div class="col-6">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Function name</th>
+            <th scope="col">std (ms)</th>
+            <th scope="col">min (ms)</th>
+            <th scope="col">max (ms)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for function in build_data_sorted[build.build_number] %}
+          <tr>
+            <td>{{function.function_name}}</td>
+            <td>{{function.std}}</td>
+            <td>{{function.min}}</td>
+            <td>{{function.max}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-6">
+      <h7>BUILD RAM STATUS:
+      {%if build.build_ramusage is greaterthan 256 %}
+      FAILED, MEMORY IS {{build.build_ramusage}}</h7>
+      {%else%}
+      PASS, MEMORY IS {{build.build_ramusage}}</h7>
+      {%endif%}
+      <br/>
+      <h7>BUILD VRAM STATUS:
+      {%if build.build_vramusage is greaterthan 512 %}
+      FAILED, MEMORY IS {{build.build_vramusage}}</h7>
+      {%else%}
+      PASS, MEMORY IS {{build.build_vramusage}}</h7>
+      {%endif%}
+      <br />
+      <h7>BUILD FPS STATUS:
+      {%if build.build_avgfps is not greaterthan 32 %}
+      PASS, FPS IS {{build.build_avgfps}}</h7>
+      {%else%}
+      FAILED, FPS IS {{build.build_avgfps}}</h7>
+      {%endif%}
+      <br/>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+  {% endfor %}
+</div>
 {% endblock %}

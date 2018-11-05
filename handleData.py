@@ -31,6 +31,8 @@ def runTestsAndUploadResultsToDb():
                 function_data[function]["max"] = max(rawData)
                 function_data[function]["min"] = min(rawData)
 
+        # parse all fps samples from json object
+        fps_samples = data["SlowfilerData"]["build"]["fps"]
 
         # fetch all jenkins data
         # We are going to assume that we have the data of the latest job
@@ -45,8 +47,18 @@ def runTestsAndUploadResultsToDb():
         conn = sqlite3.connect(sqlite_file)
         c = conn.cursor()
 
+        for sample in fps_samples: # For every function, send data to database
+            try:
+                table_name = 'Build_fps'
+                column_sample = 'sample'
+                column_build = 'build'
+                c.execute("INSERT INTO {tn} ({cs}, {cb}) VALUES ({vs}, {vb})".\
+                    format(tn=table_name, cs=column_sample, cb=column_build, vs=sample, vb=build_number))
+
+            except sqlite3.IntegrityError:
+                print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
+
         for function in function_data: # For every function, send data to database
-            print(function)
             try:
                 table_name = 'Function_build'
                 column_name = 'function_name'
@@ -72,11 +84,19 @@ def runTestsAndUploadResultsToDb():
             column_duration = "build_time_duration"
             column_ramusage = "build_ramusage"
             column_vramuasge = "build_vramusage"
+            column_avgfps = "build_avgfps"
+            column_minfps = "build_minfps"
+            column_stdfps = "build_stdfps"
 
-            c.execute("INSERT INTO {tn} ({cn}, {cd}, {cr}, {cv}) VALUES ({vn}, {vd}, {vr}, {vv})".\
-                format(tn=table_name, cn=column_number, cd=column_duration, cr=column_ramusage, cv=column_vramuasge,
-                    vn=build_number, vd=build_duration, vr=data["SlowfilerData"]["build"]["ramUsage"],
-                    vv=data["SlowfilerData"]["build"]["vramUsage"]))
+
+            c.execute("INSERT INTO {tn} ({cn}, {cd}, {cr}, {cv}, {cavgfps}, {cminfps}, {cstdfps}) VALUES ({vn}, {vd}, {vr}, {vv}, {vavgfps}, {vminfps}, {vstdfps})".\
+                format(tn=table_name, cn=column_number, cd=column_duration,
+                        cr=column_ramusage, cv=column_vramuasge, cavgfps=column_avgfps,
+                        cminfps=column_minfps, cstdfps=column_stdfps,
+                        vn=build_number, vd=build_duration, vr=data["SlowfilerData"]["build"]["ramUsage"],
+                        vv=data["SlowfilerData"]["build"]["vramUsage"],
+                        vavgfps=sum(fps_samples) / len(fps_samples), vminfps=min(fps_samples),
+                        vstdfps=statistics.stdev(fps_samples)))
 
         except sqlite3.IntegrityError:
             print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
@@ -88,19 +108,27 @@ def runTestsAndUploadResultsToDb():
 
 
         embed = Webhook(url, color=428644)
-
+        ram_usage = data["SlowfilerData"]["build"]["ramUsage"]
+        vram_usage = data["SlowfilerData"]["build"]["vramUsage"]
+        avg_fps = sum(fps_samples) / len(fps_samples)
         embed.set_author(name='Slowfiler', icon='https://i.imgur.com/rdm3W9t.png')
         embed.set_desc('New preformance report available at http://192.168.1.141:8069/builds/ ')
+        embed.add_field(name='Average FPS:',value="{} ms".format(avg_fps))
+        embed.add_field(name='RAM USAGE:',value="{} mb".format(ram_usage))
+        embed.add_field(name='VRAM USAGE:',value="{} mb".format(vram_usage))
+
+        if ram_usage < 256 and vram_usage < 512 and avg_fps < 32:
+            embed.add_field(name='STATUS:',value="PASS")
+        else:
+            embed.add_field(name='STATUS:',value="FAIL")
+
         embed.set_thumbnail('https://t4.rbxcdn.com/fee318796364847e0ff53ea658490477')
         embed.set_image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxGPybbkwZhiYyED4lUqxkYJLw2YGQ95viN9vRRNpe7zvbBX2b-g')
         embed.set_footer(text='Slowfiler, copyright 3-D asset', ts=True)
 
-        #embed.post()
-
+        embed.post()
 
         return 0
-        #try:
-        #    os.rename("data.csv", str(job["lastBuild"]["number"]) + ".csv")
     except IOError:
         print("Could not open file")
         return -1
