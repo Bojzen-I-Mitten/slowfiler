@@ -113,7 +113,7 @@ def runTestsAndUploadResultsToDb():
         avg_fps = sum(fps_samples) / len(fps_samples)
         embed.set_author(name='Slowfiler', icon='https://i.imgur.com/rdm3W9t.png')
         embed.set_desc('New preformance report available at http://192.168.1.141:8069/builds/ ')
-        embed.add_field(name='Average FPS:',value="{} ms".format(avg_fps))
+        embed.add_field(name='Average frametime:',value="{} ms".format(avg_fps))
         embed.add_field(name='RAM USAGE:',value="{} mb".format(ram_usage))
         embed.add_field(name='VRAM USAGE:',value="{} mb".format(vram_usage))
 
@@ -123,7 +123,6 @@ def runTestsAndUploadResultsToDb():
             embed.add_field(name='STATUS:',value="FAIL")
 
         embed.set_thumbnail('https://t4.rbxcdn.com/fee318796364847e0ff53ea658490477')
-        embed.set_image('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxGPybbkwZhiYyED4lUqxkYJLw2YGQ95viN9vRRNpe7zvbBX2b-g')
         embed.set_footer(text='Slowfiler, copyright 3-D asset', ts=True)
 
         embed.post()

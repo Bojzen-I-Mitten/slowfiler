@@ -194,28 +194,56 @@
     </script>
   </div>
   <div class="col-6">
-    <h7>BUILD RAM STATUS:
-    {%if build_data[0].build_ramusage is greaterthan 256 %}
-    FAILED, MEMORY IS {{build_data[0].build_ramusage}}</h7>
-    {%else%}
-    PASS, MEMORY IS {{build_data[0].build_ramusage}}</h7>
-    {%endif%}
-    <br/>
-    <h7>BUILD VRAM STATUS:
-    {%if build_data[0].build_vramusage is greaterthan 512 %}
-    FAILED, MEMORY IS {{build_data[0].build_vramusage}}</h7>
-    {%else%}
-    PASS, MEMORY IS {{build_data[0].build_vramusage}}</h7>
-    {%endif%}
-    <br />
-    <h7>BUILD FPS STATUS:
-    {%if build_data[0].build_avgfps is not greaterthan 32 %}
-    PASS, FPS IS {{build_data[0].build_avgfps}}</h7>
-    {%else%}
-    FAILED, FPS IS {{build_data[0].build_avgfps}}</h7>
-    {%endif%}
+    <table class="table">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">TYPE</th>
+          <th scope="col">SAMPLE</th>
+          <th scope="col">STATUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>VRAM</td>
+          <td>{{build_data[0].build_vramusage}} mb</td>
+          <td>
+            {%if build_data[0].build_vramusage is greaterthan 512 %}
+            FAILED
+            {%else%}
+            PASS
+            {%endif%}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>RAM</td>
+          <td>{{build_data[0].build_ramusage}} mb</td>
+          <td>
+            {%if build_data[0].build_ramusage is greaterthan 256 %}
+            FAILED
+            {%else%}
+            PASS
+            {%endif%}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Frametime</td>
+          <td>{{build_data[0].build_avgfps}}</td>
+          <td>
+            {%if build_data[0].build_avgfps is not greaterthan 32 %}
+            PASS
+            {%else%}
+            FAILED
+            {%endif%}
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
+<h4>Data for individual builds</h4>
 <ul class="nav nav-tabs">
   {% for build in build_data %}
   <li class="active"><a data-toggle="tab" href="#{{build.build_number}}">Build:#{{build.build_number}}</a></li>
@@ -225,106 +253,138 @@
 
   {% for build in build_data %}
   <div id="{{build.build_number}}" class="tab-pane fade in active">
-    <div class="col-6">
-      <h7> The average execution time per tracked function in latest build</h7>
-      <canvas id="latestBuildTime" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
-      <script>
-        var ctx = document.getElementById("latestBuildTime");
-        var myChart = new Chart(ctx, {
-          type: 'horizontalBar',
-          data: {
-              labels: [ {% for function in build_data_sorted[build.build_number] %}
-                    "{{function.function_name}}",
-                  {% endfor %}],
-              datasets:[{
-                  label: 'Execution time in microseconds per tracked function',
-                  data: [
-                      {% for function in build_data_sorted[build.build_number] %}
-                        {{ function.avg }},
-                      {% endfor %}
+    <div class="row">
+
+      <div class="col-6">
+        <canvas id="latestBuildTime" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
+        <script>
+          var ctx = document.getElementById("latestBuildTime");
+          var myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            data: {
+                labels: [ {% for function in build_data_sorted[build.build_number] %}
+                      "{{function.function_name}}",
+                    {% endfor %}],
+                datasets:[{
+                    label: 'Execution time in microseconds per tracked function',
+                    data: [
+                        {% for function in build_data_sorted[build.build_number] %}
+                          {{ function.avg }},
+                        {% endfor %}
+                      ],
+
+                    borderColor: [
+                        'rgba(0,99,132,1)',
+                        'rgba(1, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 102, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
                     ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                    scales: {
+                        yAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'Functioname'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }],
 
-                  borderColor: [
-                      'rgba(0,99,132,1)',
-                      'rgba(1, 162, 235, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 102, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          options: {
-                  scales: {
-                      yAxes: [{
-                        scaleLabel: {
-                          display: true,
-                          labelString: 'Functioname'
-                        },
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }],
+                        xAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'Frame time in microsoft'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+          });
+        </script>
+      </div>
+      <div class="col-6">
+        <table class="table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">TYPE</th>
+              <th scope="col">SAMPLE</th>
+              <th scope="col">STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1</th>
+              <td>VRAM</td>
+              <td>{{build.build_vramusage}} mb</td>
+              <td>
+                {%if build.build_vramusage is greaterthan 512 %}
+                FAILED
+                {%else%}
+                PASS
+                {%endif%}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>RAM</td>
+              <td>{{build.build_ramusage}} mb</td>
+              <td>
+                {%if build.build_ramusage is greaterthan 256 %}
+                FAILED
+                {%else%}
+                PASS
+                {%endif%}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Frametime</td>
+              <td>{{build.build_avgfps}}</td>
+              <td>
+                {%if build.build_avgfps is not greaterthan 32 %}
+                PASS
+                {%else%}
+                FAILED
+                {%endif%}
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      <div class="col-12">
+        <table class="table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Function name</th>
+              <th scope="col">std (ms)</th>
+              <th scope="col">min (ms)</th>
+              <th scope="col">max (ms)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for function in build_data_sorted[build.build_number] %}
+            <tr>
+              <td>{{function.function_name}}</td>
+              <td>{{function.std}}</td>
+              <td>{{function.min}}</td>
+              <td>{{function.max}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-                      xAxes: [{
-                        scaleLabel: {
-                          display: true,
-                          labelString: 'Frame time in microsoft'
-                        },
-                          ticks: {
-                              beginAtZero:true
-                          }
-                      }]
-                  }
-              }
-        });
-      </script>
+      </div>
     </div>
-    <div class="col-6">
-      <table class="table">
-        <thead class="thead-light">
-          <tr>
-            <th scope="col">Function name</th>
-            <th scope="col">std (ms)</th>
-            <th scope="col">min (ms)</th>
-            <th scope="col">max (ms)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for function in build_data_sorted[build.build_number] %}
-          <tr>
-            <td>{{function.function_name}}</td>
-            <td>{{function.std}}</td>
-            <td>{{function.min}}</td>
-            <td>{{function.max}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="col-6">
-      <h7>BUILD RAM STATUS:
-      {%if build.build_ramusage is greaterthan 256 %}
-      FAILED, MEMORY IS {{build.build_ramusage}}</h7>
-      {%else%}
-      PASS, MEMORY IS {{build.build_ramusage}}</h7>
-      {%endif%}
-      <br/>
-      <h7>BUILD VRAM STATUS:
-      {%if build.build_vramusage is greaterthan 512 %}
-      FAILED, MEMORY IS {{build.build_vramusage}}</h7>
-      {%else%}
-      PASS, MEMORY IS {{build.build_vramusage}}</h7>
-      {%endif%}
-      <br />
-      <h7>BUILD FPS STATUS:
-      {%if build.build_avgfps is not greaterthan 32 %}
-      PASS, FPS IS {{build.build_avgfps}}</h7>
-      {%else%}
-      FAILED, FPS IS {{build.build_avgfps}}</h7>
-      {%endif%}
-      <br/>
+
     </div>
     <br/>
     <br/>

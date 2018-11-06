@@ -99,6 +99,5 @@ def builds():
         else:
             build_data_sorted[function.build].append(function)
             
-    runTestsAndUploadResultsToDb()
     return render_template("dashboard.html",  build_data_sorted = build_data_sorted,
         build_data = build_data, sorted_fps_samples = sorted_fps_samples)
