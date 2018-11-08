@@ -18,7 +18,8 @@ def runTestsAndUploadResultsToDb():
         function_data = {}
         for processor_id in data["SlowfilerData"]["processor"]:
             for function in data["SlowfilerData"]["processor"][processor_id]["functions"]:
-                rawData = data["SlowfilerData"]["processor"][processor_id]["functions"][function] # Gives an array of all samples
+                rawData = [int(s) for s in data["SlowfilerData"]["processor"][processor_id]["functions"][function].split(',')];
+                rawData = [x / 1000000.0 for x in rawData] # Gives an array of all samples
                 function_data[function] = {}
                 function_data[function]["avg"] = sum(rawData) / len(rawData)
 
@@ -32,7 +33,7 @@ def runTestsAndUploadResultsToDb():
                 function_data[function]["min"] = min(rawData)
 
         # parse all fps samples from json object
-        fps_samples = data["SlowfilerData"]["build"]["fps"]
+        fps_samples = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"]]
 
         # fetch all jenkins data
         # We are going to assume that we have the data of the latest job
@@ -131,3 +132,5 @@ def runTestsAndUploadResultsToDb():
     except IOError:
         print("Could not open file")
         return -1
+
+runTestsAndUploadResultsToDb()
