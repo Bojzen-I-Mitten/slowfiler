@@ -4,6 +4,7 @@ import os
 from discord_hooks import Webhook
 
 import json
+import numpy as np
 import statistics
 
 import jenkins
@@ -31,9 +32,10 @@ def runTestsAndUploadResultsToDb():
 
                 function_data[function]["max"] = max(rawData)
                 function_data[function]["min"] = min(rawData)
-
+                array = np.array(rawData);
+                function_data[function]["97th"] = np.percentile(array, 97)
         # parse all fps samples from json object
-        fps_samples = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"]]
+        fps_samples = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"][-3:-1]]
 
         # fetch all jenkins data
         # We are going to assume that we have the data of the latest job
@@ -68,13 +70,14 @@ def runTestsAndUploadResultsToDb():
                 column_max = 'max'
                 column_min = 'min'
                 column_build = 'build'
+                column_97th = 'p97th'
 
                 sample = function_data[function]
 
-                c.execute("INSERT INTO {tn} ({cn}, {ca}, {cs}, {cm}, {cnv}, {cb}) VALUES (\"{vn}\", {va}, {vs}, {vm}, {vnv}, {vb})".\
+                c.execute("INSERT INTO {tn} ({cn}, {ca}, {cs}, {cm}, {cnv}, {cb}, {c97}) VALUES (\"{vn}\", {va}, {vs}, {vm}, {vnv}, {vb}, {v97})".\
                     format(tn=table_name, cn=column_name, ca=column_avg, cs=column_std,
-                        cm=column_max, cnv=column_min, cb=column_build,
-                        vn=function, va=(sample["avg"]), vs=sample["std"], vm=sample["max"], vnv=sample["min"], vb=build_number))
+                        cm=column_max, cnv=column_min, cb=column_build, c97=column_97th,
+                        vn=function, va=(sample["avg"]), vs=sample["std"], vm=sample["max"], vnv=sample["min"], vb=build_number, v97=sample["97th"]))
 
             except sqlite3.IntegrityError:
                 print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
@@ -126,11 +129,9 @@ def runTestsAndUploadResultsToDb():
         embed.set_thumbnail('https://t4.rbxcdn.com/fee318796364847e0ff53ea658490477')
         embed.set_footer(text='Slowfiler, copyright 3-D asset', ts=True)
 
-        embed.post()
+        #embed.post()
 
         return 0
     except IOError:
         print("Could not open file")
         return -1
-
-runTestsAndUploadResultsToDb()

@@ -310,6 +310,53 @@
         </script>
       </div>
       <div class="col-6">
+        <canvas id="build_fps{{build.build_number}}" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
+        <script>
+          var ctx = document.getElementById("build_fps{{build.build_number}}");
+          var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [ {% for sample in sorted_fps_samples[build.build_number] %}
+                      "{{sample}}",
+                    {% endfor %}],
+                datasets:[{
+                    label: 'Execution time in microseconds per tracked function',
+
+                    data: [
+                        {% for sample in sorted_fps_samples[build.build_number] %}
+                          {{ sample }},
+                        {% endfor %}
+                      ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                    scales: {
+                        yAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'framtime ms'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }],
+
+                        xAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'sample'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+          });
+        </script>
+      </div>
+      <div class="col-6">
         <table class="table">
           <thead class="thead-light">
             <tr>
@@ -363,7 +410,9 @@
           <thead class="thead-light">
             <tr>
               <th scope="col">Function name</th>
+              <th scope="col">avg(ms)</th>
               <th scope="col">std (ms)</th>
+              <th scope="col">97th (ms)</th>
               <th scope="col">min (ms)</th>
               <th scope="col">max (ms)</th>
             </tr>
@@ -372,7 +421,9 @@
             {% for function in build_data_sorted[build.build_number] %}
             <tr>
               <td>{{function.function_name}}</td>
+              <td>{{function.avg}}</td>
               <td>{{function.std}}</td>
+              <td>{{function.p97th}}</td>
               <td>{{function.min}}</td>
               <td>{{function.max}}</td>
             </tr>

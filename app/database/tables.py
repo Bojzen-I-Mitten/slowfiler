@@ -22,7 +22,8 @@ class Function_build(db.Model):
     max = Column(Float, nullable=False)
     min = Column(Float, nullable=False)
     build = Column(Integer, primary_key=False)
-
+    p97th = Column(Float, nullable=False)
+    
     def __init__(self, name, avg, std, max, min, build):
         self.function_name = name
         self.avg = avg
