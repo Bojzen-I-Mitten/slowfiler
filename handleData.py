@@ -132,3 +132,5 @@ def runTestsAndUploadResultsToDb():
     except IOError:
         print("Could not open file")
         return -1
+
+runTestsAndUploadResultsToDb()
