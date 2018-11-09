@@ -13,7 +13,7 @@ import jenkins
 def runTestsAndUploadResultsToDb():
     functionDict = {}
     try:
-        with open("C:\\Program Files (x86)\\Jenkins\\workspace\\SSP\\thomas\\ReleaseEditorBuild64\\data.json", "r") as ins:
+        with open("C:\\Users\\Carl\\Documents\\Stort-spelprojekt\\thomas\\DebugEditorBuild64\\data.json", "r") as ins:
             data = json.load(ins)
 
         function_data = {}
@@ -35,7 +35,7 @@ def runTestsAndUploadResultsToDb():
                 array = np.array(rawData);
                 function_data[function]["97th"] = np.percentile(array, 97)
         # parse all fps samples from json object
-        fps_samples = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"][-3:-1]]
+        fps_samples = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"][::10]]
 
         # fetch all jenkins data
         # We are going to assume that we have the data of the latest job
