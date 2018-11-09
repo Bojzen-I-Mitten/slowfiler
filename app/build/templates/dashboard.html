@@ -246,19 +246,18 @@
 <h4>Data for individual builds</h4>
 <ul class="nav nav-tabs">
   {% for build in build_data %}
-  <li class="active"><a data-toggle="tab" href="#{{build.build_number}}">Build:#{{build.build_number}}</a></li>
+  <li><a data-toggle="tab" href="#{{build.build_number}}">Build:#{{build.build_number}}</a></li>
   {% endfor %}
 </ul>
 <div class="tab-content">
 
   {% for build in build_data %}
-  <div id="{{build.build_number}}" class="tab-pane fade in active">
+  <div id="{{build.build_number}}" class="tab-pane fade">
     <div class="row">
-
       <div class="col-6">
-        <canvas id="latestBuildTime" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
+        <canvas id="latestBuildTime{{build.build_number}}" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
         <script>
-          var ctx = document.getElementById("latestBuildTime");
+          var ctx = document.getElementById("latestBuildTime{{build.build_number}}");
           var myChart = new Chart(ctx, {
             type: 'horizontalBar',
             data: {
@@ -358,7 +357,7 @@
             </tr>
           </tbody>
         </table>
-        </div>
+      </div>
       <div class="col-12">
         <table class="table">
           <thead class="thead-light">
@@ -385,10 +384,10 @@
       </div>
     </div>
 
-    </div>
-    <br/>
-    <br/>
-    <br/>
+
   {% endfor %}
 </div>
+<br/>
+<br/>
+<br/>
 {% endblock %}

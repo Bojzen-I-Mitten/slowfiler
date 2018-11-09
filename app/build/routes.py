@@ -13,14 +13,12 @@ template_folder='templates')
 
 @app.route('/builds/runtests/')
 def runtest():
-    """
     print("Starting thomas")
     os.system("run.exe.lnk")
     print("Starting crunch of data")
     results = runTestsAndUploadResultsToDb()
     print("All done, now showing page")
     return redirect(url_for("builds"))
-    """
 
 @app.route('/builds/nukedatabase/')
 def nukedatabase():
@@ -98,6 +96,6 @@ def builds():
             build_data_sorted[function.build] = [function]
         else:
             build_data_sorted[function.build].append(function)
-            
+
     return render_template("dashboard.html",  build_data_sorted = build_data_sorted,
         build_data = build_data, sorted_fps_samples = sorted_fps_samples)
