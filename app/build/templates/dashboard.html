@@ -151,7 +151,7 @@
                   "{{build.build_number}}",
                 {% endfor %}],
             datasets:[{
-                label: 'Average frame time per build',
+                label: 'Average frame time',
                 data: [
                     {% for build in build_data %}
                       {{ build.build_avgfps }},
