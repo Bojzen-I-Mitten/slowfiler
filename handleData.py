@@ -13,7 +13,7 @@ import jenkins
 def runTestsAndUploadResultsToDb():
     functionDict = {}
     try:
-        with open("C:\\Users\\Carl\\Documents\\Stort-spelprojekt\\thomas\\DebugEditorBuild64\\data.json", "r") as ins:
+        with open("C:\\Program Files (x86)\\Jenkins\\workspace\\SSP\\thomas\\ReleaseEditorBuild64\\data.json", "r") as ins:
             data = json.load(ins)
 
         function_data = {}

@@ -207,9 +207,9 @@
         <tr>
           <th scope="row">1</th>
           <td>VRAM</td>
-          <td>{{build_data[0].build_vramusage}} mb</td>
+          <td>{{build_data[-1].build_vramusage}} mb</td>
           <td>
-            {%if build_data[0].build_vramusage is greaterthan 512 %}
+            {%if build_data[-1].build_vramusage is greaterthan 512 %}
             FAILED
             {%else%}
             PASS
@@ -219,9 +219,9 @@
         <tr>
           <th scope="row">2</th>
           <td>RAM</td>
-          <td>{{build_data[0].build_ramusage}} mb</td>
+          <td>{{build_data[-1].build_ramusage}} mb</td>
           <td>
-            {%if build_data[0].build_ramusage is greaterthan 256 %}
+            {%if build_data[-1].build_ramusage is greaterthan 256 %}
             FAILED
             {%else%}
             PASS
@@ -231,9 +231,9 @@
         <tr>
           <th scope="row">3</th>
           <td>Frametime</td>
-          <td>{{build_data[0].build_avgfps}}</td>
+          <td>{{build_data[-1].build_avgfps}}</td>
           <td>
-            {%if build_data[0].build_avgfps is not greaterthan 32 %}
+            {%if build_data[-1].build_avgfps is not greaterthan 32 %}
             PASS
             {%else%}
             FAILED
