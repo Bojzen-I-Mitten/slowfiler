@@ -255,20 +255,69 @@
   <div id="{{build.build_number}}" class="tab-pane fade">
     <div class="row">
       <div class="col-12">
-        <canvas id="build_fps{{build.build_number}}" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
+        <h6>CPU frame time</h6>
+        <canvas id="build_fps_cpu{{build.build_number}}" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
         <script>
-          var ctx = document.getElementById("build_fps{{build.build_number}}");
+          var ctx = document.getElementById("build_fps_cpu{{build.build_number}}");
           var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: [ {% for sample in sorted_fps_samples[build.build_number] %}
+                labels: [ {% for sample in sorted_fps_samples_cpu[build.build_number] %}
                       {{""}},
                     {% endfor %}],
                 datasets:[{
                     label: 'frametime in ms',
 
                     data: [
-                        {% for sample in sorted_fps_samples[build.build_number] %}
+                        {% for sample in sorted_fps_samples_cpu[build.build_number] %}
+                          {{ sample }},
+                        {% endfor %}
+                      ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                    scales: {
+                        yAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'framtime ms'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }],
+
+                        xAxes: [{
+                          scaleLabel: {
+                            display: true,
+                            labelString: 'sample'
+                          },
+                            ticks: {
+                                beginAtZero:true
+                            }
+                        }]
+                    }
+                }
+          });
+        </script>
+      </div>
+      <div class="col-12">
+        <h6>GPU frame time</h6>
+        <canvas id="build_fps_gpu{{build.build_number}}" class="table table-responsive chartjs-render-monitor" style="display: block;" width="540" height="270"></canvas>
+        <script>
+          var ctx = document.getElementById("build_fps_gpu{{build.build_number}}");
+          var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [ {% for sample in sorted_fps_samples_gpu[build.build_number] %}
+                      {{""}},
+                    {% endfor %}],
+                datasets:[{
+                    label: 'frametime in ms',
+
+                    data: [
+                        {% for sample in sorted_fps_samples_gpu[build.build_number] %}
                           {{ sample }},
                         {% endfor %}
                       ],

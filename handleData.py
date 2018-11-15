@@ -2,7 +2,7 @@ import re
 import sqlite3
 import os
 from discord_hooks import Webhook
-
+from hookurl import url
 import json
 import numpy as np
 import statistics
@@ -13,7 +13,7 @@ import jenkins
 def runTestsAndUploadResultsToDb():
     functionDict = {}
     try:
-        with open("C:\\Program Files (x86)\\Jenkins\\workspace\\SSP\\thomas\\ReleaseEditorBuild64\\data.json", "r") as ins:
+        with open("C:\\Program Files (x86)\\Jenkins\\workspace\\SSP\\thomas\\CompiledGame\\Bin\\data.json", "r") as ins:
             data = json.load(ins)
 
         function_data = {}
@@ -35,7 +35,8 @@ def runTestsAndUploadResultsToDb():
                 array = np.array(rawData);
                 function_data[function]["97th"] = np.percentile(array, 97)
         # parse all fps samples from json object
-        fps_samples = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"][::10]]
+        fps_samples_cpu = [x / 1000000 for x in data["SlowfilerData"]["build"]["fps"][::10]]
+        fps_samples_gpu = [x / 1000000 for x in data["SlowfilerData"]["gpu"][::10]]
 
         # fetch all jenkins data
         # We are going to assume that we have the data of the latest job
@@ -50,9 +51,20 @@ def runTestsAndUploadResultsToDb():
         conn = sqlite3.connect(sqlite_file)
         c = conn.cursor()
 
-        for sample in fps_samples: # For every function, send data to database
+        for sample in fps_samples_cpu: # For every function, send data to database
             try:
-                table_name = 'Build_fps'
+                table_name = 'Build_fps_gpu'
+                column_sample = 'sample'
+                column_build = 'build'
+                c.execute("INSERT INTO {tn} ({cs}, {cb}) VALUES ({vs}, {vb})".\
+                    format(tn=table_name, cs=column_sample, cb=column_build, vs=sample, vb=build_number))
+
+            except sqlite3.IntegrityError:
+                print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
+
+        for sample in fps_samples_gpu: # For every function, send data to database
+            try:
+                table_name = 'Build_fps_cpu'
                 column_sample = 'sample'
                 column_build = 'build'
                 c.execute("INSERT INTO {tn} ({cs}, {cb}) VALUES ({vs}, {vb})".\
@@ -99,8 +111,8 @@ def runTestsAndUploadResultsToDb():
                         cminfps=column_minfps, cstdfps=column_stdfps,
                         vn=build_number, vd=build_duration, vr=data["SlowfilerData"]["build"]["ramUsage"],
                         vv=data["SlowfilerData"]["build"]["vramUsage"],
-                        vavgfps=sum(fps_samples) / len(fps_samples), vminfps=min(fps_samples),
-                        vstdfps=statistics.stdev(fps_samples)))
+                        vavgfps=sum(fps_samples_cpu) / len(fps_samples_cpu), vminfps=min(fps_samples_cpu),
+                        vstdfps=statistics.stdev(fps_samples_cpu)))
 
         except sqlite3.IntegrityError:
             print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
@@ -108,13 +120,11 @@ def runTestsAndUploadResultsToDb():
         conn.commit()
         conn.close()
 
-        url = 'https://discordapp.com/api/webhooks/489031312032923649/m_DPPOX33J1unuGYKHnHYtEID2qkYmKYNj5yEjajmfc0yxnT0iwm69k18fz6rE8DsRcD'
-
 
         embed = Webhook(url, color=428644)
         ram_usage = data["SlowfilerData"]["build"]["ramUsage"]
         vram_usage = data["SlowfilerData"]["build"]["vramUsage"]
-        avg_fps = sum(fps_samples) / len(fps_samples)
+        avg_fps = sum(fps_samples_cpu) / len(fps_samples_cpu)
         embed.set_author(name='Slowfiler', icon='https://i.imgur.com/rdm3W9t.png')
         embed.set_desc('New preformance report available at http://192.168.1.141:8069/builds/ ')
         embed.add_field(name='Average frametime:',value="{} ms".format(avg_fps))
@@ -129,7 +139,7 @@ def runTestsAndUploadResultsToDb():
         embed.set_thumbnail('https://t4.rbxcdn.com/fee318796364847e0ff53ea658490477')
         embed.set_footer(text='Slowfiler, copyright 3-D asset', ts=True)
 
-        #embed.post()
+        embed.post()
 
         return 0
     except IOError:

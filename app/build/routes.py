@@ -3,8 +3,9 @@ from sqlalchemy import desc, or_
 from app import db, app
 from werkzeug import secure_filename
 import os
+import subprocess
 import time
-from app.database.tables import Function_build, Build_data, Build_fps
+from app.database.tables import Function_build, Build_data, Build_fps_cpu, Build_fps_gpu
 
 from handleData import runTestsAndUploadResultsToDb
 
@@ -13,12 +14,16 @@ template_folder='templates')
 
 @app.route('/builds/runtests/')
 def runtest():
-    print("Starting thomas")
-    os.system("run.exe.lnk")
+    print("Starting Thomas")
+    print(os.system("editor.exe.lnk"))
+    print("Starting Concussion ball")
+    print(os.system("game.exe.lnk"))
     print("Starting crunch of data")
+
     results = runTestsAndUploadResultsToDb()
-    print("All done, now showing page")
+
     return redirect(url_for("builds"))
+
 
 @app.route('/builds/nukedatabase/')
 def nukedatabase():
@@ -75,14 +80,22 @@ def compare():
 def builds():
     function_build_data = Function_build.query.all()
     build_data = Build_data.query.all()
-    fps_samples = Build_fps.query.all()
+    fps_samples_cpu = Build_fps_cpu.query.all()
+    fps_samples_gpu = Build_fps_gpu.query.all()
 
-    sorted_fps_samples = {}
-    for sample in fps_samples:
-        if sample.build not in sorted_fps_samples:
-            sorted_fps_samples[sample.build] = [sample.sample]
+    sorted_fps_samples_cpu = {}
+    for sample in fps_samples_cpu:
+        if sample.build not in sorted_fps_samples_cpu:
+            sorted_fps_samples_cpu[sample.build] = [sample.sample]
         else:
-            sorted_fps_samples[sample.build].append(sample.sample)
+            sorted_fps_samples_cpu[sample.build].append(sample.sample)
+
+    sorted_fps_samples_gpu = {}
+    for sample in fps_samples_gpu:
+        if sample.build not in sorted_fps_samples_gpu:
+            sorted_fps_samples_gpu[sample.build] = [sample.sample]
+        else:
+            sorted_fps_samples_gpu[sample.build].append(sample.sample)
 
     if (len(build_data) < 1 and len(function_build_data) < 1):
         runTestsAndUploadResultsToDb()
@@ -98,4 +111,5 @@ def builds():
             build_data_sorted[function.build].append(function)
 
     return render_template("dashboard.html",  build_data_sorted = build_data_sorted,
-        build_data = build_data, sorted_fps_samples = sorted_fps_samples)
+        build_data = build_data, sorted_fps_samples_cpu = sorted_fps_samples_cpu,
+        sorted_fps_samples_gpu = sorted_fps_samples_gpu)

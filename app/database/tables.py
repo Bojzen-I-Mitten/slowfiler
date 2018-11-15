@@ -4,8 +4,15 @@ from sqlalchemy.orm import relationship
 
 from string import digits
 
-class Build_fps(db.Model):
-    __tablename__ = 'Build_fps'
+class Build_fps_gpu(db.Model):
+    __tablename__ = 'Build_fps_gpu'
+    __bind_key__ = 'Dhomas'
+    id = Column(Integer, primary_key=True)
+    sample = Column(Float, nullable=False)
+    build = Column(Integer, primary_key=False)
+
+class Build_fps_cpu(db.Model):
+    __tablename__ = 'Build_fps_cpu'
     __bind_key__ = 'Dhomas'
     id = Column(Integer, primary_key=True)
     sample = Column(Float, nullable=False)
@@ -23,7 +30,7 @@ class Function_build(db.Model):
     min = Column(Float, nullable=False)
     build = Column(Integer, primary_key=False)
     p97th = Column(Float, nullable=False)
-    
+
     def __init__(self, name, avg, std, max, min, build):
         self.function_name = name
         self.avg = avg
