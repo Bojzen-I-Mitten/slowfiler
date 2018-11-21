@@ -129,10 +129,10 @@ def runTestsAndUploadResultsToDb(gameReturn, EditorReturn):
             embed.set_author(name='Slowfiler', icon='https://i.imgur.com/rdm3W9t.png')
             embed.set_desc('New preformance report available at http://192.168.1.141:8069/builds/ ')
             embed.add_field(name='Average frametime:',value="{} ms".format(avg_fps))
-            embed.add_field(name='RAM USAGE:',value="{} mb".format(ram_usage))
+            embed.add_field(name='RAM USAGE:',value="{} mb".format(ram_usage - vram_usage))
             embed.add_field(name='VRAM USAGE:',value="{} mb".format(vram_usage))
 
-            if ram_usage < 256 and vram_usage < 512 and avg_fps < 32:
+            if (ram_usage - vram_usage) < 256 and vram_usage < 512 and avg_fps < 32:
                 embed.add_field(name='STATUS:',value="PASS")
             else:
                 embed.add_field(name='STATUS:',value="FAIL")

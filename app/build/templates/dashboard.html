@@ -48,7 +48,7 @@
                 label: 'RAM usage',
                 data: [
                     {% for build in build_data %}
-                      {{ build.build_ramusage }},
+                      {{ build.build_ramusage - build.build_vramusage }},
                     {% endfor %}
                   ],
                 borderColor: [
@@ -219,9 +219,9 @@
         <tr>
           <th scope="row">2</th>
           <td>RAM</td>
-          <td>{{build_data[-1].build_ramusage}} mb</td>
+          <td>{{build_data[-1].build_ramusage - build_data[-1].build_vramusage }} mb</td>
           <td>
-            {%if build_data[-1].build_ramusage is greaterthan 256 %}
+            {%if (build_data[-1].build_ramusage - build_data[-1].build_vramusage) is greaterthan 256 %}
             FAILED
             {%else%}
             PASS
@@ -432,9 +432,9 @@
             <tr>
               <th scope="row">2</th>
               <td>RAM</td>
-              <td>{{build.build_ramusage}} mb</td>
+              <td>{{build.build_ramusage - build.build_vramusage}} mb</td>
               <td>
-                {%if build.build_ramusage is greaterthan 256 %}
+                {%if (build.build_ramusage - build.build_vramusage) is greaterthan 256 %}
                 FAILED
                 {%else%}
                 PASS
