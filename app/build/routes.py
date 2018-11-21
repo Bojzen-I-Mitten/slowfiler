@@ -15,12 +15,13 @@ template_folder='templates')
 @app.route('/builds/runtests/')
 def runtest():
     print("Starting Thomas")
-    print(os.system("editor.exe.lnk"))
+    EditorReturn = os.system("editor.exe.lnk")
     print("Starting Concussion ball")
-    print(os.system("game.exe.lnk"))
+    time.sleep(10)
+    gameReturn = os.system("game.exe.lnk")
     print("Starting crunch of data")
-
-    results = runTestsAndUploadResultsToDb()
+    results = runTestsAndUploadResultsToDb(gameReturn, EditorReturn)
+    print("All done, now showing page")
 
     return redirect(url_for("builds"))
 
